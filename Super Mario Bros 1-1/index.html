@@ -1,0 +1,937 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>Phaser - Making your first game, part 2</title>
+    <script src="https://cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(5500, 745, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+function preload() {
+
+    game.load.image('sky', 'assets/sky.png');
+    game.load.image('ground', 'assets/platform.png');
+    game.load.image('cubeblock', 'assets/Question Block.gif');
+    game.load.image('cubeblock2', 'assets/Question Block hit.png');
+    game.load.image('cubeblock3', 'assets/Brick Block.png');
+    game.load.image('cubeblock4', 'assets/Tile Block.png');
+    game.load.image('cubeblock5', 'assets/Warp Pipe.png');
+    game.load.image('cubeblock6', 'assets/Warp Pipe 2.png');
+    game.load.image('cubeblock7', 'assets/Warp Pipe 3.png');
+    game.load.image('ending', 'assets/Flagpole.gif');
+    game.load.image('cubeblock9', 'assets/castle.png');
+    game.load.image('item', 'assets/Fire Flower.png');
+    //game.load.image('star', 'assets/star.png');
+    game.load.spritesheet('dude', 'assets/Mario.png', 31.2, 51);
+    game.load.spritesheet('dude', 'assets/Fire Mario.png', 31.2, 51);
+    game.load.spritesheet('baddie', 'assets/Goomba.png', 28.15, 30);
+    game.load.spritesheet('baddie2', 'assets/Koopa.png', 40.8, 47);
+
+}
+
+var platforms;
+    var enemys;
+    var player;
+    var ending;
+    var fireFlowers;
+    var score = 0;
+var scoreText;
+
+function create() {
+
+    //  We're going to be using physics, so enable the Arcade Physics system
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //  A simple background for our game
+    game.add.sprite(0, 0, 'sky').scale.setTo(7, 2);
+    
+    //game.add.sprite(0, 0, 'Flagpole');
+
+    //  The platforms group contains the ground and the 2 ledges we can jump on
+    platforms = game.add.group();
+    
+
+    //  We will enable physics for any object that is created in this group
+    platforms.enableBody = true;
+
+    // Here we create the ground.
+    var ground = platforms.create(0, game.world.height - 64, 'ground');
+
+    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+    ground.scale.setTo(0, 0);
+
+    //  This stops it from falling away when you jump on it
+    ground.body.immovable = true;
+
+    //  Now let's create two ledges
+    for (var i = 0; i < 76; i++)
+        {
+    var ledge = platforms.create(i*25, 720, 'ground');
+
+    ledge.body.immovable = true;
+            
+        }
+    for (var i = 0; i < 15; i++)
+        {
+    var ledge = platforms.create(1950+i*25, 720, 'ground');
+
+    ledge.body.immovable = true;
+            
+        }
+    
+    for (var i = 0; i < 61; i++)
+        {
+    var ledge = platforms.create(2400+i*25, 720, 'ground');
+
+    ledge.body.immovable = true;
+            
+        }
+    var ledge = platforms.create(3910, 720, 'ground');
+
+    ledge.body.immovable = true;
+    for (var i = 0; i < 61; i++)
+        {
+    var ledge = platforms.create(3985+i*25, 720, 'ground');
+
+    ledge.body.immovable = true;
+            
+        }
+    
+    for (var i = 0; i < 2; i++)
+        {
+    var ledge = platforms.create(556, 620, 'cubeblock');
+            
+    ledge.body.immovable = true;
+            
+    ledge.scale.setTo(0.15, 0.15);
+            
+    ledge2 = platforms.create(706, 620, 'cubeblock');
+            
+    ledge2.body.immovable = true;
+            
+    ledge2.scale.setTo(0.15, 0.15);
+    
+    ledge3 = platforms.create(756, 620, 'cubeblock');
+            
+    ledge3.body.immovable = true;
+            
+    ledge3.scale.setTo(0.15, 0.15);
+       
+    ledge4 = platforms.create(730, 520, 'cubeblock');
+            
+    ledge4.body.immovable = true;
+            
+    ledge4.scale.setTo(0.15, 0.15);        
+            
+    //ledge5 = platforms.create(1906, 720, 'cubeblock');
+            
+    //ledge5.body.immovable = true;
+            
+    //ledge5.scale.setTo(0.15, 0.15);   
+            
+    //ledge6 = platforms.create(1931, 720, 'cubeblock');
+            
+    //ledge6.body.immovable = true;
+            
+    //ledge6.scale.setTo(0.15, 0.15);    
+            
+    ledge7 = platforms.create(2130, 622, 'cubeblock');
+            
+    ledge7.body.immovable = true;
+            
+    ledge7.scale.setTo(0.15, 0.15);  
+            
+    //ledge8 = platforms.create(2331, 720, 'cubeblock');
+            
+    //ledge8.body.immovable = true;
+            
+    //ledge8.scale.setTo(0.15, 0.15);   
+            
+    //ledge9 = platforms.create(2356, 720, 'cubeblock');
+            
+    //ledge9.body.immovable = true;
+            
+    //ledge9.scale.setTo(0.15, 0.15); 
+            
+   // ledge10 = platforms.create(2381, 720, 'cubeblock');
+            
+    //ledge10.body.immovable = true;
+            
+   // ledge10.scale.setTo(0.15, 0.15); 
+            
+    ledge10 = platforms.create(2455, 522, 'cubeblock');
+            
+    ledge10.body.immovable = true;
+            
+    ledge10.scale.setTo(0.15, 0.15);
+            
+    ledge11 = platforms.create(2755, 622, 'cubeblock');
+            
+    ledge11.body.immovable = true;
+            
+    ledge11.scale.setTo(0.15, 0.15);
+            
+    ledge12 = platforms.create(2830, 622, 'cubeblock');
+            
+    ledge12.body.immovable = true;
+            
+    ledge12.scale.setTo(0.15, 0.15);
+            
+    ledge13 = platforms.create(2905, 622, 'cubeblock');
+            
+    ledge13.body.immovable = true;
+            
+    ledge13.scale.setTo(0.15, 0.15);
+            
+    ledge14 = platforms.create(2830, 522, 'cubeblock');
+            
+    ledge14.body.immovable = true;
+            
+    ledge14.scale.setTo(0.15, 0.15);
+            
+    ledge15 = platforms.create(3335, 522, 'cubeblock');
+            
+    ledge15.body.immovable = true;
+            
+    ledge15.scale.setTo(0.15, 0.15);
+            
+    ledge16 = platforms.create(3360, 522, 'cubeblock');
+            
+    ledge16.body.immovable = true;
+            
+    ledge16.scale.setTo(0.15, 0.15);
+            
+    //ledge17 = platforms.create(3932, 720, 'cubeblock');
+            
+    //ledge17.body.immovable = true;
+            
+    //ledge17.scale.setTo(0.15, 0.15);
+            
+    //ledge18 = platforms.create(3957, 720, 'cubeblock');
+            
+    //ledge18.body.immovable = true;
+            
+    //ledge18.scale.setTo(0.15, 0.15);
+            
+    ledge19 = platforms.create(4357, 622, 'cubeblock');
+            
+    ledge19.body.immovable = true;
+            
+    ledge19.scale.setTo(0.15, 0.15);
+    
+        }
+    
+   
+    var ledge = platforms.create(732, 622, 'cubeblock3');
+
+    ledge.body.immovable = true;
+            
+    ledge.scale.setTo(0.25, 0.25);
+        
+            
+    ledge2 = platforms.create(682, 622, 'cubeblock3');
+
+    ledge2.body.immovable = true;
+            
+    ledge2.scale.setTo(0.25, 0.25);
+    
+    ledge3 = platforms.create(782, 622, 'cubeblock3');
+
+    ledge3.body.immovable = true;
+            
+    ledge3.scale.setTo(0.25, 0.25);
+            
+    ledge4 = platforms.create(2105, 624, 'cubeblock3');
+
+    ledge4.body.immovable = true;
+            
+    ledge4.scale.setTo(0.25, 0.25);
+            
+    ledge5 = platforms.create(2157, 624, 'cubeblock3');
+
+    ledge5.body.immovable = true;
+            
+    ledge5.scale.setTo(0.25, 0.25);
+            
+    ledge6 = platforms.create(2157, 624, 'cubeblock3');
+
+    ledge6.body.immovable = true;
+            
+    ledge6.scale.setTo(0.25, 0.25);
+      for (var i = 0; i < 6; i++)
+        {      
+    ledge7 = platforms.create(2182+i*25, 524, 'cubeblock3');
+            
+    ledge7.body.immovable = true;
+            
+    ledge7.scale.setTo(0.25, 0.25);  
+        }
+    ledge9 = platforms.create(2406, 524, 'cubeblock3');
+            
+    ledge9.body.immovable = true;
+            
+    ledge9.scale.setTo(0.25, 0.25); 
+    
+    ledge10 = platforms.create(2431, 524, 'cubeblock3');
+            
+    ledge10.body.immovable = true;
+            
+    ledge10.scale.setTo(0.25, 0.25);
+            
+    ledge11 = platforms.create(2456, 624, 'cubeblock3');
+            
+    ledge11.body.immovable = true;
+            
+    ledge11.scale.setTo(0.25, 0.25);
+            
+    ledge12 = platforms.create(2607, 624, 'cubeblock3');
+            
+    ledge12.body.immovable = true;
+            
+    ledge12.scale.setTo(0.25, 0.25);
+            
+    ledge13 = platforms.create(2632, 624, 'cubeblock3');
+            
+    ledge13.body.immovable = true;
+            
+    ledge13.scale.setTo(0.25, 0.25);
+            
+    ledge13 = platforms.create(3057, 624, 'cubeblock3');
+            
+    ledge13.body.immovable = true;
+            
+    ledge13.scale.setTo(0.25, 0.25);
+            
+    ledge14 = platforms.create(3136, 524, 'cubeblock3');
+            
+    ledge14.body.immovable = true;
+            
+    ledge14.scale.setTo(0.25, 0.25);
+            
+    ledge15 = platforms.create(3161, 524, 'cubeblock3');
+            
+    ledge15.body.immovable = true;
+            
+    ledge15.scale.setTo(0.25, 0.25);
+            
+    ledge16 = platforms.create(3186, 524, 'cubeblock3');
+            
+    ledge16.body.immovable = true;
+            
+    ledge16.scale.setTo(0.25, 0.25);
+            
+    ledge17 = platforms.create(3311, 524, 'cubeblock3');
+            
+    ledge17.body.immovable = true;
+            
+    ledge17.scale.setTo(0.25, 0.25);
+            
+    ledge18 = platforms.create(3386, 524, 'cubeblock3');
+            
+    ledge18.body.immovable = true;
+            
+    ledge18.scale.setTo(0.25, 0.25);
+            
+    ledge19 = platforms.create(3361, 624, 'cubeblock3');
+            
+    ledge19.body.immovable = true;
+            
+    ledge19.scale.setTo(0.25, 0.25);
+            
+    ledge20 = platforms.create(3336, 624, 'cubeblock3');
+            
+    ledge20.body.immovable = true;
+            
+    ledge20.scale.setTo(0.25, 0.25);
+    
+    ledge21 = platforms.create(4309, 624, 'cubeblock3');
+            
+    ledge21.body.immovable = true;
+            
+    ledge21.scale.setTo(0.25, 0.25);
+    
+    ledge22 = platforms.create(4334, 624, 'cubeblock3');
+            
+    ledge22.body.immovable = true;
+            
+    ledge22.scale.setTo(0.25, 0.25);
+    
+    ledge23 = platforms.create(4384, 624, 'cubeblock3');
+            
+    ledge23.body.immovable = true;
+            
+    ledge23.scale.setTo(0.25, 0.25);
+            
+        
+    
+    var ledge = platforms.create(882, 670, 'cubeblock5');
+
+    ledge.body.immovable = true;
+            
+    ledge.scale.setTo(0.25, 0.25);
+    
+    ledge2 = platforms.create(4182, 670, 'cubeblock5');
+
+    ledge2.body.immovable = true;
+            
+    ledge2.scale.setTo(0.25, 0.25);
+    
+    ledge3 = platforms.create(4586, 670, 'cubeblock5');
+
+    ledge3.body.immovable = true;
+            
+    ledge3.scale.setTo(0.25, 0.25);
+    
+    var ledge = platforms.create(1332, 620, 'cubeblock6');
+
+    ledge.body.immovable = true;
+            
+    ledge.scale.setTo(0.25, 0.25);
+            
+    ledge2 = platforms.create(1607, 622, 'cubeblock6');
+
+    ledge2.body.immovable = true;
+            
+    ledge2.scale.setTo(0.25, 0.25);
+    
+    var ledge = platforms.create(1132, 646, 'cubeblock7');
+
+    ledge.body.immovable = true;
+            
+    ledge.scale.setTo(0.25, 0.25);
+            
+    
+    for (var i = 0; i < 4; i++)
+        {
+    var ledge = platforms.create(3460+i*25, 695, 'cubeblock4');
+            
+    ledge.body.immovable = true;
+            
+    ledge.scale.setTo(1, 1);
+        }
+          for (var i = 0; i < 3; i++)
+        {   
+    ledge2 = platforms.create(3485+i*25, 670, 'cubeblock4');
+            
+    ledge2.body.immovable = true;
+            
+    ledge2.scale.setTo(1, 1);
+        }
+            for (var i = 0; i < 2; i++)
+        { 
+    ledge3 = platforms.create(3510+i*25, 645, 'cubeblock4');
+            
+    ledge3.body.immovable = true;
+            
+    ledge3.scale.setTo(1, 1);
+        }
+            
+    ledge4 = platforms.create(3535, 620, 'cubeblock4');
+            
+    ledge4.body.immovable = true;
+            
+    ledge4.scale.setTo(1, 1);
+            
+    ledge5 = platforms.create(3610, 620, 'cubeblock4');
+            
+    ledge5.body.immovable = true;
+            
+    ledge5.scale.setTo(1, 1);
+    
+    for (var i = 0; i < 2; i++)
+        {        
+    ledge6 = platforms.create(3635-i*25, 645, 'cubeblock4');
+            
+    ledge6.body.immovable = true;
+            
+    ledge6.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 3; i++)
+        {  
+    ledge8 = platforms.create(3660-i*25, 670, 'cubeblock4');
+            
+    ledge8.body.immovable = true;
+            
+    ledge8.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 4; i++)
+        {   
+    ledge9 = platforms.create(3685-i*25, 695, 'cubeblock4');
+            
+    ledge9.body.immovable = true;
+            
+    ledge9.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 5; i++)
+        {        
+    ledge10 = platforms.create(3810+i*25, 695, 'cubeblock4');
+            
+    ledge10.body.immovable = true;
+            
+    ledge10.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 4; i++)
+        {  
+    ledge11 = platforms.create(3835+i*25, 670, 'cubeblock4');
+            
+    ledge11.body.immovable = true;
+            
+    ledge11.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 3; i++)
+        {        
+    ledge12 = platforms.create(3860+i*25, 645, 'cubeblock4');
+            
+    ledge12.body.immovable = true;
+            
+    ledge12.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 2; i++)
+        {        
+    ledge13 = platforms.create(3885+i*25, 620, 'cubeblock4');
+            
+    ledge13.body.immovable = true;
+            
+    ledge13.scale.setTo(1, 1);
+        }
+    {        
+    ledge14 = platforms.create(3985, 620, 'cubeblock4');
+            
+    ledge14.body.immovable = true;
+            
+    ledge14.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 2; i++)
+        {        
+    ledge14 = platforms.create(3985+i*25, 645, 'cubeblock4');
+            
+    ledge14.body.immovable = true;
+            
+    ledge14.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 3; i++)
+    {        
+    ledge15 = platforms.create(3985+i*25, 670, 'cubeblock4');
+            
+    ledge15.body.immovable = true;
+            
+    ledge15.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 4; i++)
+    {        
+    ledge16 = platforms.create(3985+i*25, 695, 'cubeblock4');
+            
+    ledge16.body.immovable = true;
+            
+    ledge16.scale.setTo(1, 1);
+        
+        }
+    for (var i = 0; i < 9; i++)
+        {   
+    ledge17 = platforms.create(4634+i*25, 695, 'cubeblock4');
+            
+    ledge17.body.immovable = true;
+            
+    ledge17.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 8; i++)
+        {   
+    ledge18 = platforms.create(4659+i*25, 670, 'cubeblock4');
+            
+    ledge18.body.immovable = true;
+            
+    ledge18.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 7; i++)
+        {   
+    ledge19 = platforms.create(4684+i*25, 645, 'cubeblock4');
+            
+    ledge19.body.immovable = true;
+            
+    ledge19.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 6; i++)
+        {   
+    ledge20 = platforms.create(4709+i*25, 620, 'cubeblock4');
+            
+    ledge20.body.immovable = true;
+            
+    ledge20.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 5; i++)
+        {   
+    ledge21 = platforms.create(4734+i*25, 595, 'cubeblock4');
+            
+    ledge21.body.immovable = true;
+            
+    ledge21.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 4; i++)
+        {   
+    ledge22 = platforms.create(4759+i*25, 570, 'cubeblock4');
+            
+    ledge22.body.immovable = true;
+            
+    ledge22.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 3; i++)
+        {   
+    ledge23 = platforms.create(4784+i*25, 545, 'cubeblock4');
+            
+    ledge23.body.immovable = true;
+            
+    ledge23.scale.setTo(1, 1);
+        }
+    for (var i = 0; i < 2; i++)
+        {   
+    ledge24 = platforms.create(4809+i*25, 520, 'cubeblock4');
+            
+    ledge24.body.immovable = true;
+            
+    ledge24.scale.setTo(1, 1);
+        }
+    ledge25 = platforms.create(5084, 695, 'cubeblock4');
+            
+    ledge25.body.immovable = true;
+            
+    ledge25.scale.setTo(1, 1);
+    
+     var ending = platforms.create(5075, 455, 'ending');
+            
+    ending.body.immovable = true;
+            
+    ending.scale.setTo(1.6, 1.6);
+    
+    var ledge = platforms.create(5181, 586.5, 'cubeblock9');
+            
+    ledge.body.immovable = true;
+            
+    ledge.scale.setTo(1.6, 1.6);
+    
+    enemys = game.add.group()
+    
+        // The player and its settings
+    player = game.add.sprite(32, game.world.height - 150, 'dude');
+    enemy = enemys.create(700, 655, 'baddie');
+    enemy2 = enemys.create(1400, 680, 'baddie');
+    enemy3 = enemys.create(1440, 690, 'baddie');
+    enemy4 = enemys.create(2190, 490, 'baddie');
+    enemy5 = enemys.create(2230, 490, 'baddie');
+    enemy6 = enemys.create(2500, 693, 'baddie');
+    enemy7 = enemys.create(2540, 693, 'baddie');
+    enemy8 = enemys.create(3215, 693, 'baddie');
+    enemy9 = enemys.create(3255, 693, 'baddie');
+    enemy10 = enemys.create(3295, 693, 'baddie');
+    enemy11 = enemys.create(3335, 693, 'baddie');
+    enemy12 = enemys.create(4445, 693, 'baddie');
+    enemy13 = enemys.create(4485, 693, 'baddie');
+    enemy14 = enemys.create(2685, 673, 'baddie2');
+
+    //  We need to enable physics on the player
+game.physics.arcade.enable(enemy);
+    enemy.body.bounce.x = -0.2;
+    enemy.body.gravity.y = 300;
+    enemy.body.collideWorldBounds = false;
+    
+    enemy.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy.animations.play("right")
+    enemy.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy2);
+    enemy2.body.bounce.y = 0.2;
+    enemy2.body.gravity.y = 300;
+    enemy2.body.collideWorldBounds = true;
+    
+    enemy2.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy2.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy2.animations.play("right")
+    enemy2.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy3);
+    enemy3.body.bounce.y = 0.2;
+    enemy3.body.gravity.y = 300;
+    enemy3.body.collideWorldBounds = true;
+    
+    enemy3.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy3.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy3.animations.play("right")
+    enemy3.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy4);
+    enemy4.body.bounce.y = 0.2;
+    enemy4.body.gravity.y = 300;
+    enemy4.body.collideWorldBounds = true;
+    
+    enemy4.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy4.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy4.animations.play("right")
+    enemy4.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy5);
+    enemy5.body.bounce.y = 0.2;
+    enemy5.body.gravity.y = 300;
+    enemy5.body.collideWorldBounds = true;
+    
+    enemy5.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy5.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy5.animations.play("right")
+    enemy5.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy6);
+    enemy6.body.bounce.y = 0.2;
+    enemy6.body.gravity.y = 300;
+    enemy6.body.collideWorldBounds = true;
+    
+    enemy6.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy6.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy6.animations.play("right")
+    enemy6.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy7);
+    enemy7.body.bounce.y = 0.2;
+    enemy7.body.gravity.y = 300;
+    enemy7.body.collideWorldBounds = true;
+    
+    enemy7.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy7.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy7.animations.play("right")
+    enemy7.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy8);
+    enemy8.body.bounce.y = 0.2;
+    enemy8.body.gravity.y = 300;
+    enemy8.body.collideWorldBounds = true;
+    
+    enemy8.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy8.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy8.animations.play("right")
+    enemy8.body.velocity.x = 150
+    
+    
+    game.physics.arcade.enable(enemy9);
+    enemy9.body.bounce.y = 0.2;
+    enemy9.body.gravity.y = 300;
+    enemy9.body.collideWorldBounds = true;
+    
+    enemy9.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy9.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy9.animations.play("right")
+    enemy9.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy10);
+    enemy10.body.bounce.y = 0.2;
+    enemy10.body.gravity.y = 300;
+    enemy10.body.collideWorldBounds = true;
+    
+    enemy10.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy10.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy10.animations.play("right")
+    enemy10.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy11);
+    enemy11.body.bounce.y = 0.2;
+    enemy11.body.gravity.y = 300;
+    enemy11.body.collideWorldBounds = true;
+    
+    enemy11.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy11.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy11.animations.play("right")
+    enemy11.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy12);
+    enemy12.body.bounce.y = 0.2;
+    enemy12.body.gravity.y = 300;
+    enemy12.body.collideWorldBounds = true;
+    
+    enemy12.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy12.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy12.animations.play("right")
+    enemy12.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy13);
+    enemy13.body.bounce.y = 0.2;
+    enemy13.body.gravity.y = 300;
+    enemy13.body.collideWorldBounds = true;
+    
+    enemy13.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 20, true);
+    enemy13.animations.add('right', [12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 20, true);
+    
+    enemy13.animations.play("right")
+    enemy13.body.velocity.x = 150
+    
+    game.physics.arcade.enable(enemy14);
+    enemy14.body.bounce.y = 0.2;
+    enemy14.body.gravity.y = 300;
+    enemy14.body.collideWorldBounds = true;
+    
+    enemy14.animations.add('left', [0, 1, 2, 3, 4, 5, 6], 20, true);
+    enemy14.animations.add('right', [ 7, 8, 9, 10, 11, 12, 13], 20, true);
+    
+    enemy14.animations.play("right")
+    enemy14.body.velocity.x = 150
+    
+    game.physics.arcade.enable(player);
+    //  Player physics properties. Give the little guy a slight bounce.
+    player.body.bounce.y = 0.2;
+    player.body.gravity.y = 600;
+    player.body.collideWorldBounds = false;
+
+    //  Our two animations, walking left and right.
+    player.animations.add('left', [1, 2, 3, 4, 5, 6, 7, 8], 20, true);
+    player.animations.add('right', [10, 11, 12, 13, 14, 15, 16, 17], 20, true);
+    player.animations.add('idle', [9], 20, true);
+    
+    cursors = game.input.keyboard.createCursorKeys();
+    
+    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    
+    
+
+    enemys.enableBody = true;
+    
+    fireFlowers = game.add.group();
+    
+    fireFlowers.enableBody = true;
+    
+    var numFireFlowers = 1;
+    
+
+        //  Create a star inside of the 'stars' group
+        var fireFlower = fireFlowers.create(707, 595, 'item');
+    fireFlower.scale.setTo(1.5, 1.5);
+    
+    var fireFlower = fireFlowers.create(2132, 600, 'item');
+    fireFlower.scale.setTo(1.5, 1.5);
+    
+    
+
+}
+function enemyCollision (player, enemy) {
+
+        
+    // Removes the star from the screen
+    player.hp -= 3
+    enemy.kill();
+        
+    score += 10;
+    scoreText.text = 'Score: ' + score;
+}
+    function enemyVsPlatform(enemy, platform) {
+       // console.log()
+         //enemy.body.velocity.x *=-1
+    }
+    function enemyVsEnemy(enemy, enemy) {
+       // console.log()
+         enemy.body.velocity.x *=-2
+        //enemy8.animations.play("left")
+    }
+    function fireFlowersVsPlatform(fireFlowers, platform) {
+       // console.log()
+         //enemy.body.velocity.x *=-1
+    }
+function update() {
+
+    //  Collide the player and the stars with the platforms
+    var hitPlatform = game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.collide(enemys, platforms, enemyVsPlatform, null, this);
+    game.physics.arcade.collide(enemys, enemys, enemyVsEnemy, null, this);
+    game.physics.arcade.collide(fireFlowers, platforms, enemyVsPlatform, null, this);
+    game.physics.arcade.collide(player, ending, playerVsEnding, null, this);
+    game.physics.arcade.overlap(player, enemys, playerVsEnemy, null, this);
+    game.physics.arcade.overlap(player, fireFlowers, collectfireFlower, null, this);
+    //game.physics.arcade.overlap(player, cubeblock8, playerVsFlagpole, null, this);
+    
+    player.body.velocity.x = 0;
+    
+     if (enemy.body.position.x > game.width - 40) {
+        //Make pig move back to the left
+        enemy.body.velocity.x = -150
+        enemy.animations.play('left')
+    }
+    else if (enemy.body.position.x < 0 + 40) {
+             //go right
+        enemy.body.velocity.x = 150
+        enemy.animations.play('right')  
+     }
+    
+    
+if (cursors.left.isDown)
+    {
+        //  Move to the left
+        player.body.velocity.x = -150;
+
+        player.animations.play('left');
+    }
+    else if (cursors.right.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.x = 150;
+
+        player.animations.play('right');
+    }
+    else
+    {
+        //  Stand still
+        player.animations.stop();
+
+        player.frame = 9;
+    }
+
+    //  Allow the player to jump if they are touching the ground.
+    if (cursors.up.isDown && player.body.touching.down && hitPlatform)
+    {
+        player.body.velocity.y = -350;
+    }
+    
+    function playerVsEnemy(player, enemy) {
+        if (player.body.velocity.y > 0) {
+    enemy.kill()
+             score += 10;
+    player.body.velocity.y = -80;
+        }
+        else {
+           player.kill()
+    alert('Game Over') 
+        }
+}  
+    
+    function playerVsEnding(player, ending) {
+            alert('Level Complete')
+        
+}  
+
+}
+    function collectfireFlower (player, fireFlower) {
+    
+    // Removes the star from the screen
+    fireFlower.kill();
+    //  Add and update the score
+    score += 10;
+    scoreText.text = 'Score: ' + score;
+}
+</script>
+
+</body>
+</html>
